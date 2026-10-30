@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f6f1">
+  <meta name="description" content="Explore our restaurant menu, choose a cuisine, and build your meal.">
+  <title>Swadisht — Restaurant Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #20342b;
+      --muted: #788078;
+      --green: #2f684a;
+      --green-dark: #214e37;
+      --orange: #e78338;
+      --cream: #f7f6f1;
+      --paper: #fffefa;
+      --line: #e9e8e0;
+      --shadow: 0 16px 42px rgba(32, 52, 43, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font-family: "DM Sans", "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif; -webkit-font-smoothing: antialiased; }
+    body.drawer-open { overflow: hidden; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1200px, calc(100% - 44px)); margin: 0 auto; }
+    .announcement { padding: 8px 15px; background: var(--green-dark); color: #fffefa; text-align: center; font-size: 11px; }
+    .announcement b { color: #f4bf83; }
+    header { position: sticky; z-index: 8; top: 0; background: rgba(247, 246, 241, .93); border-bottom: 1px solid rgba(32, 52, 43, .08); backdrop-filter: blur(14px); }
+    .nav { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; background: var(--green); color: white; font-size: 20px; font-weight: 800; }
+    .brand-name { display: block; font-size: 16px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-tag { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 30px; color: #59655c; font-size: 12px; font-weight: 700; }
+    .nav-links a:hover { color: var(--green); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .language-select { min-height: 39px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 700; }
+    .cart-button, .primary-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--green); color: white; font-size: 12px; font-weight: 800; transition: .2s ease; }
+    .cart-button:hover, .primary-button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .cart-count { min-width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--green-dark); font-size: 10px; }
+    .hero { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 44px; padding: 54px 0 58px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .eyebrow::before { width: 23px; height: 1px; background: var(--orange); content: ""; }
+    h1 { max-width: 600px; margin: 16px 0 14px; font-size: clamp(42px, 5.3vw, 66px); line-height: 1.1; letter-spacing: -.055em; }
+    h1 em { color: var(--orange); font-style: normal; }
+    .hero-copy > p { max-width: 490px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .hero-actions { display: flex; align-items: center; gap: 16px; margin-top: 23px; }
+    .plain-link { color: var(--green); font-size: 12px; font-weight: 800; }
+    .hero-rating { display: flex; align-items: center; gap: 11px; margin-top: 27px; color: #59655c; font-size: 11px; }
+    .stars { color: #e79a3d; letter-spacing: 2px; }
+    .hero-visual { position: relative; min-height: 350px; }
+    .hero-image { position: absolute; inset: 0 8px 0 10px; overflow: hidden; border-radius: 48% 48% 26px 26px; background: linear-gradient(0deg, rgba(22,39,29,.12), transparent), url("https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=1200&q=85") center 52% / cover, #d9c8a9; box-shadow: var(--shadow); }
+    .hero-image::after { position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.55); border-radius: inherit; content: ""; }
+    .hero-note { position: absolute; right: -5px; bottom: 20px; padding: 13px 16px; border: 1px solid rgba(32,52,43,.07); border-radius: 15px; background: var(--paper); box-shadow: var(--shadow); font-size: 11px; font-weight: 800; }
+    .hero-note small { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; font-weight: 500; }
+    .menu-section { padding: 48px 0 68px; background: var(--paper); }
+    .menu-top { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .menu-top h2 { margin: 9px 0 5px; font-size: clamp(29px, 3.5vw, 40px); letter-spacing: -.045em; }
+    .menu-top p { margin: 0; color: var(--muted); font-size: 12px; }
+    .menu-tools { display: flex; align-items: center; gap: 9px; }
+    .search-wrap { position: relative; }
+    .search-icon { position: absolute; top: 50%; left: 13px; color: var(--muted); transform: translateY(-50%); pointer-events: none; }
+    .search-input { width: 220px; min-height: 42px; padding: 0 13px 0 37px; border: 1px solid var(--line); border-radius: 13px; outline: none; background: #fff; color: var(--ink); font-size: 12px; }
+    .search-input:focus { border-color: #83a48d; box-shadow: 0 0 0 3px rgba(47,104,74,.09); }
+    .categories { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1px 14px; scrollbar-width: thin; scrollbar-color: #d7ddcf transparent; }
+    .category-button { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 39px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #5c675e; font-size: 11px; font-weight: 700; transition: .18s ease; }
+    .category-button:hover, .category-button.active { border-color: var(--green); background: var(--green); color: white; }
+    .category-button .cat-icon { font-size: 15px; }
+    .result-line { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 15px; color: var(--muted); font-size: 11px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+    .product-card { overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--paper); transition: transform .2s ease, box-shadow .2s ease; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .product-image { position: relative; height: 175px; background-position: center; background-size: cover; background-color: #e9e2d4; }
+    .product-image::after { position: absolute; inset: 50% 0 0; background: linear-gradient(transparent, rgba(19,31,23,.18)); content: ""; }
+    .product-badge { position: absolute; z-index: 1; top: 12px; left: 12px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.65); border-radius: 999px; background: rgba(255,254,250,.93); color: var(--green-dark); font-size: 9px; font-weight: 800; }
+    .veg-dot { position: absolute; z-index: 1; right: 12px; bottom: 12px; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid #30914a; background: white; }
+    .veg-dot::after { width: 7px; height: 7px; border-radius: 50%; background: #30914a; content: ""; }
+    .product-body { padding: 15px; }
+    .product-heading { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+    .product-title { margin: 0; font-size: 15px; font-weight: 800; line-height: 1.35; }
+    .product-price { flex: 0 0 auto; color: var(--green); font-size: 15px; font-weight: 800; }
+    .product-desc { min-height: 35px; margin: 7px 0 10px; color: var(--muted); font-size: 10px; line-height: 1.65; }
+    .product-includes { min-height: 27px; display: flex; flex-wrap: wrap; gap: 5px; }
+    .ingredient { padding: 5px 7px; border-radius: 999px; background: #f1f2eb; color: #626c63; font-size: 9px; }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px dashed var(--line); }
+    .product-category { color: #92958d; font-size: 9px; }
+    .add-button { min-height: 33px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; border: 1px solid #d5e0d3; border-radius: 10px; background: #f5f8f2; color: var(--green); font-size: 10px; font-weight: 800; }
+    .add-button:hover { border-color: var(--green); background: var(--green); color: white; }
+    .empty-state { grid-column: 1 / -1; padding: 46px 15px; border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); text-align: center; font-size: 13px; }
+    .menu-footnote { margin: 20px 0 0; color: #90948b; text-align: center; font-size: 10px; line-height: 1.6; }
+    .promise { padding: 31px 0; background: #f1eee5; }
+    .promise-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .promise-item { display: flex; align-items: center; justify-content: center; gap: 11px; }
+    .promise-icon { width: 39px; height: 39px; display: grid; flex: 0 0 39px; place-items: center; border-radius: 13px; background: var(--paper); font-size: 18px; }
+    .promise-item strong { display: block; font-size: 11px; }
+    .promise-item small { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
+    footer { padding: 19px 0; color: #8b9087; text-align: center; font-size: 10px; }
+    .overlay { position: fixed; z-index: 20; inset: 0; display: none; background: rgba(22,32,25,.38); }
+    .overlay.open { display: block; }
+    .cart-drawer { position: absolute; top: 0; right: 0; width: min(430px, 100%); height: 100%; display: flex; flex-direction: column; background: var(--paper); box-shadow: -15px 0 40px rgba(0,0,0,.1); }
+    .drawer-head { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--line); }
+    .drawer-head h2 { margin: 0; font-size: 19px; }
+    .icon-button { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: white; color: var(--ink); font-size: 18px; }
+    .cart-items { flex: 1; overflow: auto; padding: 14px 20px; }
+    .cart-empty { padding: 45px 10px; color: var(--muted); text-align: center; font-size: 13px; }
+    .cart-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .cart-row strong { display: block; font-size: 12px; }
+    .cart-row small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
+    .cart-row-price { font-size: 12px; font-weight: 800; }
+    .quantity-control { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+    .quantity-control button { width: 25px; height: 25px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--green); font-weight: 800; }
+    .quantity-control span { min-width: 14px; text-align: center; font-size: 11px; font-weight: 700; }
+    .drawer-foot { padding: 18px 20px 22px; border-top: 1px solid var(--line); }
+    .total-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 13px; font-weight: 800; }
+    .checkout-button { width: 100%; min-height: 46px; }
+    .checkout-note { margin: 10px 0 0; color: var(--muted); text-align: center; font-size: 9px; line-height: 1.5; }
+    .toast { position: fixed; z-index: 30; right: 20px; bottom: 20px; padding: 12px 16px; border-radius: 12px; background: var(--green-dark); color: white; box-shadow: var(--shadow); font-size: 12px; opacity: 0; pointer-events: none; transform: translateY(10px); transition: .2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 850px) {
+      .hero { gap: 25px; }
+      .nav-links { gap: 16px; }
+      .menu-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .product-image { height: 190px; }
+    }
+    @media (max-width: 640px) {
+      .container { width: min(100% - 30px, 490px); }
+      .announcement { font-size: 9px; }
+      .nav { min-height: 65px; gap: 8px; }
+      .brand-mark { width: 37px; height: 37px; }
+      .brand-name { font-size: 14px; }
+      .brand-tag { font-size: 8px; }
+      .nav-links { display: none; }
+      .nav-actions { gap: 6px; }
+      .language-select { min-height: 37px; padding: 0 8px; font-size: 10px; }
+      .cart-button { min-height: 37px; padding: 0 10px; font-size: 10px; }
+      .cart-button .cart-label { display: none; }
+      .hero { display: flex; flex-direction: column; align-items: stretch; gap: 24px; padding: 37px 0 42px; }
+      h1 { margin: 14px 0 10px; font-size: clamp(40px, 11vw, 54px); }
+      .hero-copy > p { font-size: 12px; }
+      .hero-actions { margin-top: 18px; }
+      .hero-rating { margin-top: 18px; }
+      .hero-visual { min-height: 260px; margin: 0 5px; }
+      .hero-image { inset: 0 10px; }
+      .hero-note { right: 0; bottom: 12px; padding: 10px 12px; font-size: 10px; }
+      .menu-section { padding: 39px 0 50px; }
+      .menu-top { display: block; margin-bottom: 17px; }
+      .menu-top h2 { font-size: 30px; }
+      .menu-top p { max-width: 360px; font-size: 11px; line-height: 1.6; }
+      .menu-tools { margin-top: 15px; }
+      .search-wrap { flex: 1; }
+      .search-input { width: 100%; min-height: 40px; }
+      .categories { margin-right: -15px; padding-bottom: 12px; }
+      .category-button { min-height: 36px; padding: 0 12px; font-size: 10px; }
+      .menu-grid { grid-template-columns: 1fr; gap: 12px; }
+      .product-card { display: grid; grid-template-columns: 35% minmax(0,1fr); min-height: 176px; }
+      .product-image { height: 100%; min-height: 176px; }
+      .product-body { display: flex; flex-direction: column; justify-content: center; padding: 12px 11px; }
+      .product-title { font-size: 13px; }
+      .product-price { font-size: 13px; }
+      .product-desc { min-height: auto; margin: 5px 0 8px; font-size: 9px; }
+      .product-includes { gap: 4px; }
+      .ingredient { padding: 4px 6px; font-size: 8px; }
+      .product-footer { margin-top: 9px; padding-top: 8px; }
+      .product-category { font-size: 8px; }
+      .add-button { min-height: 29px; padding: 0 9px; font-size: 9px; }
+      .product-badge { top: 8px; left: 7px; padding: 5px 6px; font-size: 7px; }
+      .result-line { font-size: 10px; }
+      .menu-footnote { font-size: 9px; }
+      .promise-row { grid-template-columns: 1fr; gap: 14px; }
+      .promise-item { justify-content: flex-start; }
+      .toast { right: 12px; bottom: 12px; left: 12px; text-align: center; }
+    }
+    @media (max-width: 370px) {
+      .container { width: calc(100% - 24px); }
+      .product-card { grid-template-columns: 31% minmax(0,1fr); }
+      .product-body { padding: 10px 8px; }
+      .product-title, .product-price { font-size: 12px; }
+      .ingredient { font-size: 7px; }
+      .category-button { padding: 0 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="announcement" id="announcement"></div>
+  <header>
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Swadisht home">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span><span class="brand-name">Swadisht</span><span class="brand-tag" data-i18n="brandTag"></span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#menu" data-i18n="navMenu"></a>
+        <a href="#about" data-i18n="navAbout"></a>
+      </div>
+      <div class="nav-actions">
+        <label class="sr-only" for="languageSelect" data-i18n="languageLabel"></label>
+        <select class="language-select" id="languageSelect" aria-label="Select language">
+          <option value="gu">ગુજરાતી</option>
+          <option value="hi">हिन्दी</option>
+          <option value="en">English</option>
+        </select>
+        <button class="cart-button" id="openCart" type="button" aria-label="Open cart">
+          <span aria-hidden="true">🛒</span><span class="cart-label" data-i18n="cart"></span><span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="eyebrow" data-i18n="heroEyebrow"></span>
+        <h1 data-i18n-html="heroTitle"></h1>
+        <p data-i18n="heroText"></p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#menu"><span data-i18n="exploreMenu"></span><span aria-hidden="true">→</span></a>
+          <a class="plain-link" href="#menu" data-i18n="seeCategories"></a>
+        </div>
+        <div class="hero-rating"><span class="stars" aria-label="5 stars">★★★★★</span><span data-i18n="rating"></span></div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-image"></div>
+        <div class="hero-note"><span data-i18n="freshDaily"></span><small data-i18n="madeWithLove"></small></div>
+      </div>
+    </section>
+
+    <section class="menu-section" id="menu">
+      <div class="container">
+        <div class="menu-top">
+          <div><span class="eyebrow" data-i18n="menuEyebrow"></span><h2 data-i18n="menuTitle"></h2><p data-i18n="menuText"></p></div>
+          <div class="menu-tools">
+            <label class="search-wrap"><span class="search-icon" aria-hidden="true">⌕</span><input class="search-input" id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder"></label>
+          </div>
+        </div>
+        <div class="categories" id="categories" role="group" aria-label="Food categories"></div>
+        <div class="result-line"><span id="resultCount"></span><span data-i18n="priceNote"></span></div>
+        <div class="menu-grid" id="menuGrid"></div>
+        <p class="menu-footnote" data-i18n="menuFootnote"></p>
+      </div>
+    </section>
+
+    <section class="promise" id="about">
+      <div class="promise-row container">
+        <div class="promise-item"><span class="promise-icon" aria-hidden="true">🥬</span><span><strong data-i18n="promiseFresh"></strong><small data-i18n="promiseFreshText"></small></span></div>
+        <div class="promise-item"><span class="promise-icon" aria-hidden="true">🫶</span><span><strong data-i18n="promiseCare"></strong><small data-i18n="promiseCareText"></small></span></div>
+        <div class="promise-item"><span class="promise-icon" aria-hidden="true">✨</span><span><strong data-i18n="promiseChoice"></strong><small data-i18n="promiseChoiceText"></small></span></div>
+      </div>
+    </section>
+  </main>
+  <footer class="container" data-i18n="footer"></footer>
+
+  <div class="overlay" id="cartOverlay" aria-hidden="true">
+    <aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <div class="drawer-head"><h2 id="cartTitle" data-i18n="yourOrder"></h2><button class="icon-button" id="closeCart" type="button" aria-label="Close cart">×</button></div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="drawer-foot"><div class="total-row"><span data-i18n="subtotal"></span><span id="cartTotal">₹0</span></div><button class="primary-button checkout-button" id="checkoutButton" type="button" data-i18n="checkout"></button><p class="checkout-note" data-i18n="checkoutNote"></p></div>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const text = {
+      gu: {
+        brandTag: "દરેક કોળિયામાં ઘરનો સ્વાદ", navMenu: "મેનુ", navAbout: "અમારી ખાસિયત", languageLabel: "ભાષા પસંદ કરો", cart: "કાર્ટ",
+        heroEyebrow: "આજનો સ્વાદ, તમારી પસંદ", heroTitle: "શું જમવું છે<br><em>આજે?</em>", heroText: "ગુજરાતી થાળીથી લઈને પિઝા સુધી — તમારી મનપસંદ વાનગી શોધો, તેની વિગતો જુઓ અને ઓર્ડર બનાવો.",
+        exploreMenu: "મેનુ જુઓ", seeCategories: "બધી કેટેગરી ↓", rating: "4.9 · મહેમાનોની પસંદ", freshDaily: "રોજ તાજું બને", madeWithLove: "તમારા માટે પ્રેમથી",
+        menuEyebrow: "તમારી પસંદ, અમારી રસોઈ", menuTitle: "શું જમવું છે?", menuText: "કેટેગરી પસંદ કરો અથવા તમારી મનપસંદ વાનગી શોધો.", searchPlaceholder: "વાનગી શોધો...", all: "બધું", priceNote: "બધા ભાવ ₹ માં", menuFootnote: "ભાવ અને વાનગીઓ નમૂના માટે છે. ઓર્ડર પહેલાં રેસ્ટોરન્ટ સાથે ઉપલબ્ધતા અને અંતિમ ભાવ તપાસો.",
+        resultCount: (n) => `${n} વાનગીઓ`, empty: "આ શોધમાં વાનગી મળી નથી. બીજો શબ્દ અજમાવો.", add: "ઉમેરો", added: "કાર્ટમાં ઉમેર્યું", perItem: "નંગ",
+        promiseFresh: "તાજી સામગ્રી", promiseFreshText: "રોજની પસંદગીની વાનગીઓ", promiseCare: "દિલથી પીરસેલું", promiseCareText: "દરેક ઓર્ડરમાં ઘરનો સ્વાદ", promiseChoice: "તમારી પસંદનો સ્વાદ", promiseChoiceText: "ઘણી કેટેગરી, એક જ મેનુ", footer: "© 2026 Swadisht · ખાવાનો આનંદ, પસંદગી તમારી",
+        yourOrder: "તમારો ઓર્ડર", emptyCart: "તમારું કાર્ટ ખાલી છે. મેનુમાંથી વાનગી ઉમેરો!", subtotal: "કુલ", checkout: "ઓર્ડર કન્ફર્મ કરો", checkoutNote: "આ ડેમો મેનુ છે. ઓર્ડર કન્ફર્મેશન માટે રેસ્ટોરન્ટનો સંપર્ક જરૂરી છે.", decrease: "ઘટાડો", increase: "વધારો",
+        checkoutDemo: "આ મેનુ ડેમો છે — ઓર્ડર આપવા માટે રેસ્ટોરન્ટનું સાચું ફોન/ઓર્ડર સરનામું ઉમેરવું પડશે.",
+        categories: { all: "બધું", gujarati: "ગુજરાતી", kathiyawadi: "કાઠિયાવાડી", punjabi: "પંજાબી", chinese: "ચાઇનીઝ", south: "સાઉથ ઇન્ડિયન", pizza: "પિઝા", burger: "બર્ગર", sandwich: "સેન્ડવિચ", fastfood: "ફાસ્ટ ફૂડ", thali: "થાળી", drinks: "પીણાં", dessert: "મીઠાઈ" }
+      },
+      hi: {
+        brandTag: "हर निवाले में घर का स्वाद", navMenu: "मेन्यू", navAbout: "हमारी खासियत", languageLabel: "भाषा चुनें", cart: "कार्ट",
+        heroEyebrow: "आज का स्वाद, आपकी पसंद", heroTitle: "आज क्या खाना<br><em>पसंद करेंगे?</em>", heroText: "गुजराती थाली से लेकर पिज़्ज़ा तक — अपनी पसंद का खाना खोजें, उसकी पूरी जानकारी देखें और ऑर्डर तैयार करें.",
+        exploreMenu: "मेन्यू देखें", seeCategories: "सभी कैटेगरी ↓", rating: "4.9 · मेहमानों की पसंद", freshDaily: "रोज़ ताज़ा बनता है", madeWithLove: "आपके लिए प्यार से",
+        menuEyebrow: "आपकी पसंद, हमारी रसोई", menuTitle: "क्या खाना पसंद करेंगे?", menuText: "कैटेगरी चुनें या अपनी पसंदीदा डिश खोजें.", searchPlaceholder: "डिश खोजें...", all: "सभी", priceNote: "सभी कीमतें ₹ में", menuFootnote: "कीमतें और डिश नमूने के लिए हैं. ऑर्डर से पहले रेस्तरां से उपलब्धता और अंतिम कीमत जाँचें.",
+        resultCount: (n) => `${n} डिश`, empty: "इस खोज में कोई डिश नहीं मिली. दूसरा शब्द आज़माएँ.", add: "जोड़ें", added: "कार्ट में जोड़ा", perItem: "पीस",
+        promiseFresh: "ताज़ी सामग्री", promiseFreshText: "रोज़ के पसंदीदा व्यंजन", promiseCare: "दिल से परोसा", promiseCareText: "हर ऑर्डर में घर का स्वाद", promiseChoice: "आपकी पसंद का स्वाद", promiseChoiceText: "कई कैटेगरी, एक ही मेन्यू", footer: "© 2026 Swadisht · खाने का आनंद, पसंद आपकी",
+        yourOrder: "आपका ऑर्डर", emptyCart: "आपका कार्ट खाली है. मेन्यू से डिश जोड़ें!", subtotal: "कुल", checkout: "ऑर्डर कन्फर्म करें", checkoutNote: "यह डेमो मेन्यू है. ऑर्डर कन्फर्म करने के लिए रेस्तरां से संपर्क ज़रूरी है.", decrease: "कम करें", increase: "बढ़ाएँ",
+        checkoutDemo: "यह मेन्यू डेमो है — ऑर्डर के लिए रेस्तरां का सही फ़ोन/ऑर्डर लिंक जोड़ना होगा.",
+        categories: { all: "सभी", gujarati: "गुजराती", kathiyawadi: "काठियावाड़ी", punjabi: "पंजाबी", chinese: "चाइनीज़", south: "साउथ इंडियन", pizza: "पिज़्ज़ा", burger: "बर्गर", sandwich: "सैंडविच", fastfood: "फ़ास्ट फ़ूड", thali: "थाली", drinks: "पेय", dessert: "मिठाई" }
+      },
+      en: {
+        brandTag: "A little taste of home", navMenu: "Menu", navAbout: "Why Swadisht", languageLabel: "Choose language", cart: "Cart",
+        heroEyebrow: "Today's flavours, your choice", heroTitle: "What are you<br><em>craving today?</em>", heroText: "From Gujarati thalis to pizza — find your favourite, explore what comes with it, and build your order.",
+        exploreMenu: "Explore menu", seeCategories: "Browse categories ↓", rating: "4.9 · Guest favourite", freshDaily: "Freshly made daily", madeWithLove: "Made with love for you",
+        menuEyebrow: "Your cravings, our kitchen", menuTitle: "What would you like?", menuText: "Pick a category or search for a favourite dish.", searchPlaceholder: "Search dishes...", all: "Everything", priceNote: "All prices in ₹", menuFootnote: "Items and prices are sample menu data. Please confirm availability and final prices with the restaurant before ordering.",
+        resultCount: (n) => `${n} items`, empty: "No dishes found. Try another search.", add: "Add", added: "Added to cart", perItem: "pc",
+        promiseFresh: "Fresh ingredients", promiseFreshText: "Everyday favourites, freshly made", promiseCare: "Made with care", promiseCareText: "A little taste of home in every order", promiseChoice: "Made for your cravings", promiseChoiceText: "More cuisines, one simple menu", footer: "© 2026 Swadisht · Good food, your choice",
+        yourOrder: "Your order", emptyCart: "Your cart is empty. Add something tasty from the menu!", subtotal: "Subtotal", checkout: "Confirm order", checkoutNote: "This is a demo menu. Restaurant contact/checkout details need to be added to place a real order.", decrease: "Decrease", increase: "Increase",
+        checkoutDemo: "This is a menu demo — add the restaurant's real phone or ordering link to place an order.",
+        categories: { all: "Everything", gujarati: "Gujarati", kathiyawadi: "Kathiyawadi", punjabi: "Punjabi", chinese: "Chinese", south: "South Indian", pizza: "Pizza", burger: "Burgers", sandwich: "Sandwiches", fastfood: "Fast food", thali: "Thalis", drinks: "Drinks", dessert: "Desserts" }
+      }
+    };
+
+    const categories = [
+      ["all", "🍽️"], ["gujarati", "🪔"], ["kathiyawadi", "🌶️"], ["punjabi", "🧈"], ["chinese", "🥡"], ["south", "🥞"],
+      ["pizza", "🍕"], ["burger", "🍔"], ["sandwich", "🥪"], ["fastfood", "🍟"], ["thali", "🥘"], ["drinks", "🥤"], ["dessert", "🍰"]
+    ];
+    const img = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=850&q=80`;
+    const products = [
+      { id:"guj-thali", c:"gujarati", n:["ગુજરાતી થાળી","गुजराती थाली","Gujarati Thali"], d:["રોટલી, શાક, દાળ-ભાત, ફરસાણ, છાશ અને મીઠાઈ સાથેની ભરપૂર થાળી.","रोटी, सब्ज़ी, दाल-चावल, फ़रसाण, छाछ और मिठाई की भरपूर थाली.","A generous plate with roti, seasonal sabzi, dal, rice, farsan, chaas and dessert."], i:[["૨ શાક","2 सब्ज़ी","2 sabzis"],["દાળ-ભાત","दाल-चावल","Dal & rice"],["ફરસાણ","फ़रसाण","Farsan"],["છાશ","छाछ","Chaas"]], p:249, im:"photo-1546833999-b9f581a1996d" },
+      { id:"guj-khandvi", c:"gujarati", n:["ખાંડવી","खांडवी","Khandvi"], d:["ચણાના લોટ અને છાશથી બનેલા નરમ, મસાલેદાર ગુજરાતી રોલ.","बेसन और छाछ से बने नरम, मसालेदार गुजराती रोल.","Soft Gujarati gram-flour rolls tempered with mustard and sesame."], i:[["ચણાનો લોટ","बेसन","Gram flour"],["રાઈ","राई","Mustard"],["લીલું મરચું","हरी मिर्च","Green chilli"]], p:130, im:"photo-1601050690597-df0568f70950" },
+      { id:"guj-dhokla", c:"gujarati", n:["ખમણ ઢોકળા","खमण ढोकला","Khaman Dhokla"], d:["હળવા અને સ્પોન્જી ઢોકળા, લીલી ચટણી સાથે પીરસેલા.","हल्के और स्पंजी ढोकले, हरी चटनी के साथ.","Light, airy steamed gram-flour cakes with green chutney."], i:[["ચણાનો લોટ","बेसन","Gram flour"],["રાઈનો વઘાર","राई का तड़का","Mustard tempering"]], p:110, im:"photo-1606491956689-2ea866880c84" },
+      { id:"kat-sev", c:"kathiyawadi", n:["સેવ ટમેટા","सेव टमाटर","Sev Tameta"], d:["ખટમીઠી ટમેટાની ગ્રેવીમાં કાઠિયાવાડી સેવ — ગરમ રોટલી સાથે.","खट्टी-मीठी टमाटर ग्रेवी में काठियावाड़ी सेव — गरम रोटी के साथ.","Kathiyawadi sev in a tangy tomato gravy, best with hot rotli."], i:[["ટમેટાં","टमाटर","Tomato"],["સેવ","सेव","Sev"],["દેશી મસાલા","देसी मसाले","House spices"]], p:180, im:"photo-1547592180-85f173990554" },
+      { id:"kat-undhiyu", c:"kathiyawadi", n:["કાઠિયાવાડી ઊંધિયું","काठियावाड़ी उंधियू","Kathiyawadi Undhiyu"], d:["મોસમી શાક અને મસાલાનું ધીમે રાંધેલું પરંપરાગત મિશ્રણ.","मौसमी सब्ज़ियों और मसालों का धीमी आँच पर पका पारंपरिक मिश्रण.","A traditional slow-cooked mix of seasonal vegetables and spices."], i:[["મોસમી શાક","मौसमी सब्ज़ियाँ","Seasonal veg"],["મેથી મુઠિયા","मेथी मुठिया","Methi muthiya"]], p:220, im:"photo-1512621776951-a57141f2eefd" },
+      { id:"kat-bajra", c:"kathiyawadi", n:["બાજરીનો રોટલો","बाजरे की रोटी","Bajra Rotla"], d:["તવા પર શેકેલો બાજરીનો રોટલો, ગોળ અને માખણ સાથે.","तवे पर बनी बाजरे की रोटी, गुड़ और मक्खन के साथ.","Traditional pearl millet flatbread served with jaggery and butter."], i:[["બાજરીનો લોટ","बाजरे का आटा","Pearl millet"],["ગોળ","गुड़","Jaggery"],["માખણ","मक्खन","Butter"]], p:90, im:"photo-1574323347407-f5e1ad6d020b" },
+      { id:"punjabi-paneer", c:"punjabi", n:["પનીર બટર મસાલા","पनीर बटर मसाला","Paneer Butter Masala"], d:["મખમલી ટમેટા-કાજુની ગ્રેવીમાં પનીર, ક્રીમ અને મસાલા સાથે.","मख़मली टमाटर-काजू ग्रेवी में पनीर, क्रीम और मसाले.","Paneer in a creamy tomato-cashew gravy with warming spices."], i:[["પનીર","पनीर","Paneer"],["ટમેટા-કાજુ","टमाटर-काजू","Tomato-cashew"],["ક્રીમ","क्रीम","Cream"]], p:280, im:"photo-1631452180519-c014fe946bc7" },
+      { id:"punjabi-dal", c:"punjabi", n:["દાલ મખની","दाल मखनी","Dal Makhani"], d:["ધીમે રાંધેલી કાળી દાળ અને રાજમા, માખણ તથા ક્રીમ સાથે.","धीमी आँच पर पकी उड़द दाल और राजमा, मक्खन और क्रीम के साथ.","Slow-cooked black lentils and kidney beans finished with butter."], i:[["કાળી દાળ","उड़द दाल","Black lentils"],["રાજમા","राजमा","Kidney beans"],["માખણ","मक्खन","Butter"]], p:240, im:"photo-1546833999-b9f581a1996d" },
+      { id:"punjabi-naan", c:"punjabi", n:["બટર નાન","बटर नान","Butter Naan"], d:["તંદૂરમાં શેકેલો નરમ નાન, ઉપરથી માખણ લગાવેલું.","तंदूर में पका नरम नान, ऊपर से मक्खन लगा हुआ.","Soft tandoor-baked naan brushed with butter."], i:[["મેંદો","मैदा","Wheat flour"],["માખણ","मक्खन","Butter"],["તંદૂર","तंदूर","Tandoor baked"]], p:65, im:"photo-1601050690117-94f5f6fa8bd7" },
+      { id:"punjabi-chole", c:"punjabi", n:["છોલે ભટૂરે","छोले भटूरे","Chole Bhature"], d:["મસાલેદાર છોલે અને ફૂલેલા ભટૂરાનો લોકપ્રિય પંજાબી કોમ્બો.","मसालेदार छोले और फूले भटूरे का लोकप्रिय पंजाबी कॉम्बो.","A Punjabi favourite: spiced chickpeas with fluffy fried bhature."], i:[["કાબુલી ચણા","काबुली चना","Chickpeas"],["ભટૂરો","भटूरा","Bhature"],["અથાણું","अचार","Pickle"]], p:210, im:"photo-1565557623262-b51c2513a641" },
+      { id:"punjabi-kadai", c:"punjabi", n:["કઢાઈ પનીર","कड़ाही पनीर","Kadai Paneer"], d:["પનીર, કેપ્સિકમ અને ટમેટાંનો તીખો-મસાલેદાર કઢાઈ મસાલો.","पनीर, शिमला मिर्च और टमाटर की चटपटी कड़ाही मसाला करी.","Paneer, capsicum and tomato tossed in freshly ground kadai spices."], i:[["પનીર","पनीर","Paneer"],["કેપ્સિકમ","शिमला मिर्च","Capsicum"],["કઢાઈ મસાલો","कड़ाही मसाला","Kadai spices"]], p:290, im:"photo-1631452180519-c014fe946bc7" },
+      { id:"punjabi-shahi", c:"punjabi", n:["શાહી પનીર","शाही पनीर","Shahi Paneer"], d:["કાજુ અને ટમેટાની હળવી, ક્રીમી ગ્રેવીમાં પનીરના ટુકડા.","काजू और टमाटर की हल्की, क्रीमी ग्रेवी में पनीर के टुकड़े.","Paneer cubes in a mild, creamy tomato and cashew gravy."], i:[["પનીર","पनीर","Paneer"],["કાજુ","काजू","Cashew"],["ક્રીમ","क्रीम","Cream"]], p:290, im:"photo-1631452180519-c014fe946bc7" },
+      { id:"punjabi-mixveg", c:"punjabi", n:["મિક્સ વેજ","मिक्स वेज","Mix Veg"], d:["મોસમી શાકભાજી, ડુંગળી-ટમેટાની ગ્રેવી અને પંજાબી મસાલા સાથે.","मौसमी सब्ज़ियाँ, प्याज़-टमाटर की ग्रेवी और पंजाबी मसालों के साथ.","Seasonal vegetables in a rich onion-tomato gravy with Punjabi spices."], i:[["મોસમી શાક","मौसमी सब्ज़ियाँ","Seasonal veg"],["ડુંગળી-ટમેટાં","प्याज़-टमाटर","Onion-tomato"],["મસાલા","मसाले","Spices"]], p:220, im:"photo-1512621776951-a57141f2eefd" },
+      { id:"punjabi-roti", c:"punjabi", n:["તંદૂરી રોટી","तंदूरी रोटी","Tandoori Roti"], d:["તંદૂરમાં શેકેલી ઘઉંની રોટી. બટર લગાવેલું વિકલ્પ પણ ઉપલબ્ધ.","तंदूर में बनी गेहूँ की रोटी. बटर वाला विकल्प भी उपलब्ध.","Whole-wheat roti baked in the tandoor. Butter option available."], i:[["ઘઉંનો લોટ","गेहूँ का आटा","Whole wheat"],["તંદૂર","तंदूर","Tandoor baked"]], p:35, im:"photo-1601050690117-94f5f6fa8bd7" },
+      { id:"punjabi-papad", c:"punjabi", n:["મસાલા પાપડ","मसाला पापड़","Masala Papad"], d:["શેકેલા પાપડ ઉપર ડુંગળી, ટમેટાં, લીંબુ અને ચાટ મસાલો.","भुने पापड़ पर प्याज़, टमाटर, नींबू और चाट मसाला.","Roasted papad topped with onion, tomato, lemon and chaat masala."], i:[["પાપડ","पापड़","Papad"],["ડુંગળી-ટમેટાં","प्याज़-टमाटर","Onion-tomato"],["ચાટ મસાલો","चाट मसाला","Chaat masala"]], p:65, im:"photo-1601050690597-df0568f70950" },
+      { id:"chin-hakka", c:"chinese", n:["વેજ હક્કા નૂડલ્સ","वेज हक्का नूडल्स","Veg Hakka Noodles"], d:["વોક-ટોસ્ડ નૂડલ્સ, ક્રિસ્પી શાકભાજી અને સોયા-ચિલી સોસ સાથે.","वोक में बने नूडल्स, कुरकुरी सब्ज़ियों और सोया-चिली सॉस के साथ.","Wok-tossed noodles with crunchy vegetables and soy-chilli sauce."], i:[["નૂડલ્સ","नूडल्स","Noodles"],["મિક્સ શાક","मिक्स सब्ज़ियाँ","Mixed veg"],["સોયા સોસ","सोया सॉस","Soy sauce"]], p:190, im:"photo-1585032226651-759b368d7246" },
+      { id:"chin-manchurian", c:"chinese", n:["વેજ મંચુરિયન","वेज मंचूरियन","Veg Manchurian"], d:["ક્રિસ્પી વેજ બોલ્સ, આદુ-લસણની ચાઈનીઝ ગ્રેવીમાં.","कुरकुरे वेज बॉल्स, अदरक-लहसुन की चाइनीज़ ग्रेवी में.","Crispy vegetable balls tossed in a savoury ginger-garlic sauce."], i:[["મિક્સ શાક","मिक्स सब्ज़ियाँ","Mixed veg"],["આદુ-લસણ","अदरक-लहसुन","Ginger-garlic"],["ચિલી સોસ","चिली सॉस","Chilli sauce"]], p:210, im:"photo-1512058564366-18510be2db19" },
+      { id:"chin-friedrice", c:"chinese", n:["વેજ ફ્રાઇડ રાઇસ","वेज फ्राइड राइस","Veg Fried Rice"], d:["લસણ, સ્પ્રિંગ ઓનિયન અને શાકભાજી સાથે ફ્લેમ-ટોસ્ડ રાઇસ.","लहसुन, स्प्रिंग अनियन और सब्ज़ियों के साथ फ्राइड राइस.","Flame-tossed rice with vegetables, garlic and spring onion."], i:[["બાસમતી ભાત","बासमती चावल","Basmati rice"],["શાકભાજી","सब्ज़ियाँ","Vegetables"],["સોયા","सोया","Soy"]], p:180, im:"photo-1603133872878-684f208fb84b" },
+      { id:"south-dosa", c:"south", n:["મસાલા ઢોસા","मसाला डोसा","Masala Dosa"], d:["કરકરો ઢોસો, મસાલા બટાકા, સાંભાર અને નાળિયેરની ચટણી સાથે.","कुरकुरा डोसा, मसाला आलू, सांभर और नारियल चटनी के साथ.","Crisp dosa filled with spiced potato, served with sambar and chutney."], i:[["ફર્મેન્ટેડ બેટર","फर्मेंटेड बैटर","Fermented batter"],["બટાકા","आलू","Potato"],["સાંભાર","सांभर","Sambar"]], p:170, im:"photo-1589301760014-d929f3979dbc" },
+      { id:"south-idli", c:"south", n:["ઇડલી સાંભાર","इडली सांभर","Idli Sambar"], d:["વરાળમાં બાફેલી નરમ ઇડલી, ગરમ સાંભાર અને ચટણી સાથે.","भाप में पकी नरम इडली, गरम सांभर और चटनी के साथ.","Soft steamed idlis served with hot sambar and coconut chutney."], i:[["ચોખા-દાળ","चावल-दाल","Rice & lentil"],["સાંભાર","सांभर","Sambar"],["ચટણી","चटनी","Chutney"]], p:130, im:"photo-1630383249896-424e482df921" },
+      { id:"south-uttapam", c:"south", n:["વેજ ઉત્તપમ","वेज उत्तपम","Veg Uttapam"], d:["જાડું, નરમ ઉત્તપમ, ઉપર ડુંગળી, ટમેટાં અને મરચાં.","मोटा, नरम उत्तपम, ऊपर प्याज़, टमाटर और मिर्च.","Thick, soft rice-lentil pancake topped with onion, tomato and chilli."], i:[["ચોખા-દાળ","चावल-दाल","Rice & lentil"],["ડુંગળી","प्याज़","Onion"],["ટમેટાં","टमाटर","Tomato"]], p:150, im:"photo-1630383249896-424e482df921" },
+      { id:"pizza-margherita", c:"pizza", n:["માર્ઘેરિટા પિઝા","मार्घेरिटा पिज़्ज़ा","Margherita Pizza"], d:["ટમેટાની સોસ, મોઝેરેલા ચીઝ અને તાજા બેઝિલ સાથે ક્લાસિક પિઝા.","टमाटर सॉस, मोज़ेरेला चीज़ और ताज़ा बेसिल वाला क्लासिक पिज़्ज़ा.","Classic pizza with tomato sauce, mozzarella and fresh basil."], i:[["મોઝેરેલા","मोज़ेरेला","Mozzarella"],["ટમેટાની સોસ","टमाटर सॉस","Tomato sauce"],["બેઝિલ","बेसिल","Basil"]], p:249, im:"photo-1574071318508-1cdbab80d002" },
+      { id:"pizza-farmhouse", c:"pizza", n:["ફાર્મહાઉસ પિઝા","फार्महाउस पिज़्ज़ा","Farmhouse Pizza"], d:["કેપ્સિકમ, ડુંગળી, મશરૂમ અને ટમેટાં સાથે ચીઝી પિઝા.","शिमला मिर्च, प्याज़, मशरूम और टमाटर वाला चीज़ी पिज़्ज़ा.","A cheesy veggie-loaded pizza with capsicum, onion, mushroom and tomato."], i:[["કેપ્સિકમ","शिमला मिर्च","Capsicum"],["મશરૂમ","मशरूम","Mushroom"],["ચીઝ","चीज़","Cheese"]], p:329, im:"photo-1513104890138-7c749659a591" },
+      { id:"pizza-paneer", c:"pizza", n:["પનીર ટિક્કા પિઝા","पनीर टिक्का पिज़्ज़ा","Paneer Tikka Pizza"], d:["મસાલેદાર પનીર, ડુંગળી અને કેપ્સિકમ, ટિક્કા સોસ તથા ચીઝ સાથે.","मसालेदार पनीर, प्याज़ और शिमला मिर्च, टिक्का सॉस और चीज़ के साथ.","Spiced paneer, onion and capsicum with tikka sauce and cheese."], i:[["પનીર","पनीर","Paneer"],["ટિક્કા સોસ","टिक्का सॉस","Tikka sauce"],["ચીઝ","चीज़","Cheese"]], p:349, im:"photo-1571407970349-bc81e7e96d47" },
+      { id:"burger-classic", c:"burger", n:["ક્લાસિક વેજ બર્ગર","क्लासिक वेज बर्गर","Classic Veg Burger"], d:["વેજ પેટી, લેટિસ, ટમેટાં અને હાઉસ સોસ સાથે ટોસ્ટેડ બન.","वेज पैटी, लेट्यूस, टमाटर और हाउस सॉस वाला टोस्टेड बन.","Toasted bun with a veggie patty, lettuce, tomato and house sauce."], i:[["વેજ પેટી","वेज पैटी","Veg patty"],["લેટિસ","लेट्यूस","Lettuce"],["હાઉસ સોસ","हाउस सॉस","House sauce"]], p:149, im:"photo-1568901346375-23c9450c58cd" },
+      { id:"burger-paneer", c:"burger", n:["પનીર ક્રંચ બર્ગર","पनीर क्रंच बर्गर","Paneer Crunch Burger"], d:["ક્રિસ્પી પનીર પેટી, સ્લો અને સ્મોકી સોસ સાથે.","क्रिस्पी पनीर पैटी, स्लॉ और स्मोकी सॉस के साथ.","Crispy paneer patty with crunchy slaw and smoky sauce."], i:[["પનીર પેટી","पनीर पैटी","Paneer patty"],["સ્લો","स्लॉ","Slaw"],["સ્મોકી સોસ","स्मोकी सॉस","Smoky sauce"]], p:189, im:"photo-1568901346375-23c9450c58cd" },
+      { id:"sandwich-club", c:"sandwich", n:["વેજ ક્લબ સેન્ડવિચ","वेज क्लब सैंडविच","Veg Club Sandwich"], d:["ત્રણ સ્તરમાં શાકભાજી, ચીઝ અને લીલી ચટણીવાળું ટોસ્ટેડ સેન્ડવિચ.","तीन परतों में सब्ज़ियाँ, चीज़ और हरी चटनी वाला टोस्टेड सैंडविच.","A triple-layer toasted sandwich with veggies, cheese and green chutney."], i:[["બ્રેડ","ब्रेड","Bread"],["ચીઝ","चीज़","Cheese"],["લીલી ચટણી","हरी चटनी","Green chutney"]], p:160, im:"photo-1573140247632-f8fd74997d5c" },
+      { id:"sandwich-paneer", c:"sandwich", n:["પનીર ટિક્કા સેન્ડવિચ","पनीर टिक्का सैंडविच","Paneer Tikka Sandwich"], d:["પનીર ટિક્કા, કેપ્સિકમ અને ચટપટી ચટણી ભરેલું ગ્રિલ્ડ સેન્ડવિચ.","पनीर टिक्का, शिमला मिर्च और चटपटी चटनी वाला ग्रिल्ड सैंडविच.","Grilled sandwich packed with paneer tikka, capsicum and tangy chutney."], i:[["પનીર","पनीर","Paneer"],["કેપ્સિકમ","शिमला मिर्च","Capsicum"],["ચટણી","चटनी","Chutney"]], p:175, im:"photo-1573140247632-f8fd74997d5c" },
+      { id:"fast-fries", c:"fastfood", n:["પેરી પેરી ફ્રાઇઝ","पेरी पेरी फ्राइज़","Peri Peri Fries"], d:["કરકરા ગોલ્ડન ફ્રાઇઝ, પેરી પેરી મસાલા છાંટીને.","कुरकुरे गोल्डन फ्राइज़, पेरी पेरी मसाला छिड़ककर.","Golden crispy fries dusted with tangy peri peri seasoning."], i:[["બટાકા","आलू","Potato"],["પેરી પેરી","पेरी पेरी","Peri peri"],["ડિપ","डिप","Dip"]], p:119, im:"photo-1573080496219-bb080dd4f877" },
+      { id:"fast-pasta", c:"fastfood", n:["વ્હાઇટ સોસ પાસ્તા","व्हाइट सॉस पास्ता","White Sauce Pasta"], d:["ક્રીમી સોસમાં પાસ્તા, શાકભાજી, હર્બ્સ અને ચીઝ સાથે.","क्रीमी सॉस में पास्ता, सब्ज़ियाँ, हर्ब्स और चीज़ के साथ.","Pasta in a creamy sauce with vegetables, herbs and cheese."], i:[["પાસ્તા","पास्ता","Pasta"],["ક્રીમ સોસ","क्रीम सॉस","Cream sauce"],["હર્બ્સ","हर्ब्स","Herbs"]], p:220, im:"photo-1473093295043-cdd812d0e601" },
+      { id:"fast-garlicbread", c:"fastfood", n:["ચીઝ ગાર્લિક બ્રેડ","चीज़ गार्लिक ब्रेड","Cheese Garlic Bread"], d:["બટર, લસણ, હર્બ્સ અને ઓગળેલા ચીઝ સાથે બેક કરેલી બ્રેડ.","बटर, लहसुन, हर्ब्स और पिघले चीज़ वाली बेक्ड ब्रेड.","Baked bread with butter, garlic, herbs and melted cheese."], i:[["બ્રેડ","ब्रेड","Bread"],["લસણ","लहसुन","Garlic"],["ચીઝ","चीज़","Cheese"]], p:149, im:"photo-1573140247632-f8fd74997d5c" },
+      { id:"thali-jain", c:"thali", n:["જૈન થાળી","जैन थाली","Jain Thali"], d:["ડુંગળી-લસણ વગરની થાળી, બે શાક, દાળ-ભાત, રોટલી અને મીઠાઈ સાથે.","बिना प्याज़-लहसुन की थाली, दो सब्ज़ी, दाल-चावल, रोटी और मिठाई के साथ.","No onion or garlic: two sabzis, dal, rice, roti and a sweet."], i:[["૨ જૈન શાક","2 जैन सब्ज़ी","2 Jain sabzis"],["દાળ-ભાત","दाल-चावल","Dal & rice"],["મીઠાઈ","मिठाई","Dessert"]], p:259, im:"photo-1546833999-b9f581a1996d" },
+      { id:"thali-kathiyawadi", c:"thali", n:["કાઠિયાવાડી થાળી","काठियावाड़ी थाली","Kathiyawadi Thali"], d:["કાઠિયાવાડી શાક, બાજરી રોટલો, ખીચડી, છાશ અને ગોળ સાથે.","काठियावाड़ी सब्ज़ी, बाजरे की रोटी, खिचड़ी, छाछ और गुड़ के साथ.","Kathiyawadi sabzi, bajra rotla, khichdi, chaas and jaggery."], i:[["કાઠિયાવાડી શાક","काठियावाड़ी सब्ज़ी","Kathiyawadi sabzi"],["રોટલો","रोटला","Rotla"],["છાશ","छाछ","Chaas"]], p:279, im:"photo-1512621776951-a57141f2eefd" },
+      { id:"drink-chaas", c:"drinks", n:["મસાલા છાશ","मसाला छाछ","Masala Chaas"], d:["ઠંડી છાશ, શેકેલા જીરું અને તાજી કોથમીર સાથે.","ठंडी छाछ, भुना जीरा और ताज़े धनिये के साथ.","Chilled buttermilk with roasted cumin and fresh coriander."], i:[["દહીં","दही","Yogurt"],["શેકેલું જીરું","भुना जीरा","Roasted cumin"],["કોથમીર","धनिया","Coriander"]], p:45, im:"photo-1556679343-c7306c1976bc" },
+      { id:"drink-lassi", c:"drinks", n:["મીઠી લસ્સી","मीठी लस्सी","Sweet Lassi"], d:["જાડી અને ઠંડી દહીંની લસ્સી, એલચીની હળવી સુગંધ સાથે.","गाढ़ी और ठंडी दही की लस्सी, हल्की इलायची की खुशबू के साथ.","Thick chilled yogurt lassi with a delicate hint of cardamom."], i:[["દહીં","दही","Yogurt"],["એલચી","इलायची","Cardamom"],["ખાંડ","चीनी","Sugar"]], p:90, im:"photo-1570197788417-0e82375c9371" },
+      { id:"dessert-gulab", c:"dessert", n:["ગરમ ગુલાબજાંબુ","गरम गुलाब जामुन","Warm Gulab Jamun"], d:["ચાસણીમાં પલાળેલા નરમ ગુલાબજાંબુ, ગરમ પીરસેલા.","चाशनी में डूबे नरम गुलाब जामुन, गरम परोसे गए.","Soft milk-solid dumplings soaked in fragrant sugar syrup."], i:[["ખોયા","खोया","Khoya"],["ખાંડની ચાસણી","चीनी की चाशनी","Sugar syrup"],["એલચી","इलायची","Cardamom"]], p:80, im:"photo-1563805042-7684c019e1cb" },
+      { id:"dessert-kulfi", c:"dessert", n:["મલાઈ કુલ્ફી","मलाई कुल्फी","Malai Kulfi"], d:["ધીમે જમાવેલી ક્રીમી કુલ્ફી, પિસ્તા અને એલચી સાથે.","धीरे जमी क्रीमी कुल्फी, पिस्ता और इलायची के साथ.","Slow-frozen creamy Indian kulfi finished with pistachio and cardamom."], i:[["દૂધ","दूध","Milk"],["પિસ્તા","पिस्ता","Pistachio"],["એલચી","इलायची","Cardamom"]], p:100, im:"photo-1563805042-7684c019e1cb" }
+    ];
+
+    const state = { lang: "gu", category: "all", query: "", cart: {} };
+    const $ = (selector) => document.querySelector(selector);
+    const localized = (values) => values[["gu", "hi", "en"].indexOf(state.lang)];
+    const money = (amount) => `₹${amount.toLocaleString("en-IN")}`;
+    const safeText = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
+
+    function setLanguage(lang) {
+      state.lang = text[lang] ? lang : "gu";
+      document.documentElement.lang = state.lang;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        const value = text[state.lang][key];
+        if (typeof value === "string") el.textContent = value;
+      });
+      document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = text[state.lang][el.dataset.i18nHtml]; });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = text[state.lang][el.dataset.i18nPlaceholder]; });
+      $("#announcement").innerHTML = `<span>${safeText(text[state.lang].brandTag)}</span> <b>·</b> <span>${safeText(text[state.lang].menuText)}</span>`;
+      $("#languageSelect").value = state.lang;
+      renderCategories();
+      renderProducts();
+      renderCart();
+    }
+
+    function renderCategories() {
+      const dict = text[state.lang].categories;
+      $("#categories").innerHTML = categories.map(([id, icon]) => `<button type="button" class="category-button${state.category === id ? " active" : ""}" data-category="${id}" aria-pressed="${state.category === id}"><span class="cat-icon" aria-hidden="true">${icon}</span>${safeText(dict[id])}</button>`).join("");
+    }
+
+    function renderProducts() {
+      const query = state.query.trim().toLocaleLowerCase();
+      const matches = products.filter((product) => {
+        const categoryMatches = state.category === "all" || product.c === state.category;
+        const searchable = [localized(product.n), localized(product.d), ...product.i.map(localized)].join(" ").toLocaleLowerCase();
+        return categoryMatches && (!query || searchable.includes(query));
+      });
+      $("#resultCount").textContent = text[state.lang].resultCount(matches.length);
+      if (!matches.length) {
+        $("#menuGrid").innerHTML = `<div class="empty-state">${safeText(text[state.lang].empty)}</div>`;
+        return;
+      }
+      $("#menuGrid").innerHTML = matches.map((product) => `
+        <article class="product-card">
+          <div class="product-image" role="img" aria-label="${safeText(localized(product.n))}" style="background-image:url('${img(product.im)}')">
+            <span class="product-badge">${safeText(text[state.lang].categories[product.c])}</span><span class="veg-dot" aria-label="Vegetarian"></span>
+          </div>
+          <div class="product-body">
+            <div class="product-heading"><h3 class="product-title">${safeText(localized(product.n))}</h3><span class="product-price">${money(product.p)}</span></div>
+            <p class="product-desc">${safeText(localized(product.d))}</p>
+            <div class="product-includes">${product.i.map((ingredient) => `<span class="ingredient">${safeText(localized(ingredient))}</span>`).join("")}</div>
+            <div class="product-footer"><span class="product-category">${safeText(text[state.lang].categories[product.c])}</span><button class="add-button" type="button" data-add="${product.id}"><span aria-hidden="true">＋</span>${safeText(text[state.lang].add)}</button></div>
+          </div>
+        </article>`).join("");
+    }
+
+    function addToCart(id, amount = 1) {
+      state.cart[id] = (state.cart[id] || 0) + amount;
+      renderCart();
+      showToast(`${localized(products.find((item) => item.id === id).n)} · ${text[state.lang].added}`);
+    }
+
+    function updateQuantity(id, amount) {
+      const next = (state.cart[id] || 0) + amount;
+      if (next <= 0) delete state.cart[id];
+      else state.cart[id] = next;
+      renderCart();
+    }
+
+    function renderCart() {
+      const entries = Object.entries(state.cart).filter(([, quantity]) => quantity > 0);
+      const count = entries.reduce((sum, [, quantity]) => sum + quantity, 0);
+      const total = entries.reduce((sum, [id, quantity]) => sum + products.find((item) => item.id === id).p * quantity, 0);
+      $("#cartCount").textContent = count;
+      $("#cartTotal").textContent = money(total);
+      $("#cartItems").innerHTML = entries.length ? entries.map(([id, quantity]) => {
+        const product = products.find((item) => item.id === id);
+        const title = safeText(localized(product.n));
+        return `<div class="cart-row"><div><strong>${title}</strong><small>${money(product.p)} × ${quantity} ${safeText(text[state.lang].perItem)}</small><div class="quantity-control"><button type="button" data-quantity="-1" data-id="${id}" aria-label="${safeText(text[state.lang].decrease)} ${title}">−</button><span>${quantity}</span><button type="button" data-quantity="1" data-id="${id}" aria-label="${safeText(text[state.lang].increase)} ${title}">+</button></div></div><span class="cart-row-price">${money(product.p * quantity)}</span></div>`;
+      }).join("") : `<div class="cart-empty">${safeText(text[state.lang].emptyCart)}</div>`;
+    }
+
+    let toastTimer;
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function openCart() {
+      $("#cartOverlay").classList.add("open");
+      $("#cartOverlay").setAttribute("aria-hidden", "false");
+      document.body.classList.add("drawer-open");
+      $("#closeCart").focus();
+    }
+    function closeCart() {
+      $("#cartOverlay").classList.remove("open");
+      $("#cartOverlay").setAttribute("aria-hidden", "true");
+      document.body.classList.remove("drawer-open");
+      $("#openCart").focus();
+    }
+
+    $("#languageSelect").addEventListener("change", (event) => setLanguage(event.target.value));
+    $("#categories").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
+      if (!button) return;
+      state.category = button.dataset.category;
+      renderCategories();
+      renderProducts();
+    });
+    $("#menuGrid").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-add]");
+      if (button) addToCart(button.dataset.add);
+    });
+    $("#searchInput").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      renderProducts();
+    });
+    $("#cartItems").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-quantity]");
+      if (button) updateQuantity(button.dataset.id, Number(button.dataset.quantity));
+    });
+    $("#openCart").addEventListener("click", openCart);
+    $("#closeCart").addEventListener("click", closeCart);
+    $("#cartOverlay").addEventListener("click", (event) => { if (event.target === $("#cartOverlay")) closeCart(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && $("#cartOverlay").classList.contains("open")) closeCart(); });
+    $("#checkoutButton").addEventListener("click", () => showToast(text[state.lang].checkoutDemo));
+
+    setLanguage("gu");
+  </script>
+</body>
+</html>
